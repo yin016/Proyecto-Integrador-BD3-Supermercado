@@ -1,2 +1,4 @@
-# Proyecto-Integrador-BD3-Supermercado
-Este proyecto resuelve la gestión de un supermercado optimizando las búsquedas mediante índices avanzados y manejando categorías complejas con SQL recursivo
+Proyecto Integrador: Supermercado "La Economía"Problemática: Gestión de inventario masivo con optimización de búsquedas y jerarquía de productos.  Requisitos Técnicos Implementados:
+* Carga Masiva: 1,000,000 de registros para pruebas de estrés.
+* Indexación: Uso de B-Tree, Hash, GIN (JSONB) y GiST (Rangos).
+* SQL Avanzado: Consultas recursivas para categorías y Window Functions para rankings. 
