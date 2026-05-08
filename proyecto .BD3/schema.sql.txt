@@ -1,0 +1,22 @@
+-- Estructura del Supermercado "La Economía"
+CREATE TABLE categorias (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    parent_id INTEGER REFERENCES categorias(id) -- Para la jerarquía (punto E)
+);
+
+CREATE TABLE productos (
+    id SERIAL PRIMARY KEY,
+    codigo_barras VARCHAR(50) UNIQUE,
+    nombre VARCHAR(150) NOT NULL,
+    categoria_id INTEGER REFERENCES categorias(id),
+    precio DECIMAL(10,2) NOT NULL,
+    detalles_especificos JSONB, -- Para índice GIN (punto C)
+    vigencia_promocion DATERANGE -- Para índice GiST (punto C)
+);
+
+-- Estrategias de Indexación Obligatorias
+CREATE INDEX idx_productos_precio_btree ON productos USING btree (precio); -- B-Tree
+CREATE INDEX idx_productos_nombre_hash ON productos USING hash (nombre); -- Hash
+CREATE INDEX idx_productos_detalles_gin ON productos USING GIN (detalles_especificos); -- GIN
+CREATE INDEX idx_productos_promocion_gist ON productos USING GIST (vigencia_promocion); -- GiST

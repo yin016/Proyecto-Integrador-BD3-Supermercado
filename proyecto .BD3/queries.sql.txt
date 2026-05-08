@@ -1,0 +1,24 @@
+-- A. Window Function: Ranking de los 10 productos más caros por categoría
+SELECT nombre, precio, categoria_id,
+       RANK() OVER (PARTITION BY categoria_id ORDER BY precio DESC) as ranking_categoria
+FROM productos
+LIMIT 10;
+
+-- B. CTE y Recursividad: Árbol de categorías del supermercado
+WITH RECURSIVE ArbolPasillos AS (
+    -- Caso base: Categorías principales
+    SELECT id, nombre, parent_id, 1 as profundidad
+    FROM categorias WHERE parent_id IS NULL
+    UNION ALL
+    -- Caso recursivo: Categorías secundarias
+    SELECT c.id, c.nombre, c.parent_id, ap.profundidad + 1
+    FROM categorias c 
+    JOIN ArbolPasillos ap ON c.parent_id = ap.id
+)
+SELECT * FROM ArbolPasillos;
+
+-- C. Análisis de Performance (Para tu informe)
+-- Ejecuta esto en DBeaver con Ctrl+Shift+E para ver el impacto del índice
+EXPLAIN ANALYZE 
+SELECT * FROM productos 
+WHERE detalles_especificos @> '{"tacc": "Sin TACC"}';

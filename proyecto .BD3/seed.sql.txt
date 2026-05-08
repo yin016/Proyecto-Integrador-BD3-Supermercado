@@ -1,0 +1,27 @@
+-- Insertar categorías base
+INSERT INTO categorias (nombre, parent_id) VALUES 
+('Almacén', NULL), -- ID 1
+('Bebidas', NULL), -- ID 2
+('Limpieza', NULL); -- ID 3
+
+-- Insertar subcategorías para la recursividad
+INSERT INTO categorias (nombre, parent_id) VALUES 
+('Yerbas', 1), ('Gaseosas', 2), ('Jabones', 3);
+
+-- Carga masiva de 1.000.000 de filas
+INSERT INTO productos (codigo_barras, nombre, categoria_id, precio, detalles_especificos, vigencia_promocion)
+SELECT 
+    '779000' || LPAD(s.i::text, 7, '0'), -- Código de barras simulado
+    CASE 
+        WHEN s.i % 3 = 0 THEN 'Yerba Mate Orgánica ' || s.i
+        WHEN s.i % 3 = 1 THEN 'Gaseosa Sabor Pomelo ' || s.i
+        ELSE 'Jabón Líquido Floral ' || s.i
+    END,
+    (s.i % 6) + 1, -- Distribuye entre las categorías creadas
+    (random() * (4500 - 150) + 150)::decimal(10,2), -- Precios entre $150 y $4500
+    jsonb_build_object(
+        'marca', CASE WHEN s.i % 2 = 0 THEN 'Arcor' ELSE 'Molinos' END,
+        'tacc', CASE WHEN s.i % 5 = 0 THEN 'Sin TACC' ELSE 'Contiene Gluten' END
+    ),
+    daterange(current_date, (current_date + (floor(random() * 20) || ' days')::interval)::date)
+FROM generate_series(1, 1000000) AS s(i);
